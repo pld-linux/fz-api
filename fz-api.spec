@@ -1,16 +1,19 @@
 Summary:	FZ-API to access the Fotonic cameras
 Summary(pl.UTF-8):	FZ-API pozwalające na dostęp do kamer Fotonic
 Name:		fz-api
-# version unknown
-Version:	0
-Release:	1
+# see fz_api_src/fzapi.cpp /FZAPI_VERSION
+Version:	4.1.2
+%define	verdate	20130925
+Release:	0.%{verdate}.1
 License:	LGPL v3+
 Group:		Libraries
-Source0:	http://www.fotonic.com/assets/documents/downloads/fz-linux-api_x64.tar.gz.zip
-# Source0-md5:	74cc0d1dcd13a6fe98baae01777cb1a3
-# tarballs differ only by pre-compiled binaries; we use only sources and docs, which are the same
-#Source1:	http://www.fotonic.com/assets/documents/downloads/fz-linux-api_x86.tar.gz.zip
-## Source1-md5:	bb37c1bf0bfbd3f06e8f6b0393a46b87
+Source0:	http://www.fotonic.com/assets/documents/files/131002/fz-linux-api_x64_%{verdate}.tar.gz
+# Source0-md5:	bd306ca31230cd632ca4060b5c26b98b
+# there is also
+#Source1:	http://www.fotonic.com/assets/documents/files/fz-linux-api_x86_20130322.tar.gz
+## Source1-md5:	05b3be93d3ba1644c53f5cca9f6029f9
+# but it's older and both versions could be built from the same sources
+Patch0:		%{name}-system-libyuv.patch
 URL:		http://www.fotonic.com/content/Products/downloads.aspx
 BuildRequires:	libstdc++-devel
 BuildRequires:	libyuv-devel
@@ -60,23 +63,14 @@ Dokumentacja do FZ-API.
 
 %prep
 %setup -q -c
-
-tar xzf fz-linux-api_x64.tar.gz
-# not required so far
-#tar xzf fz-linux-api_x86.tar.gz
-
-# adjust libyuv include
-%{__sed} -i -e 's,libyuv/libyuv\.h,libyuv.h,' fz-linux-api_x64/fz_api_src/fzapi.cpp
-# be consistent with docs and precompiled binaries
-%{__sed} -i -e 's,libFZ_API,libfz_api,' fz-linux-api_x64/fz_api_src/Makefile
+%patch0 -p0
 
 %build
 %{__make} -C fz-linux-api_x64/fz_api_src \
 	CC="%{__cc}" \
 	CPP="%{__cxx}" \
-	CFLAGS="%{rpmcflags} -fPIC -Wall" \
-	LDFLAGS_D_OUT="%{rpmldflags} -shared -Wl,-soname,libfz_api.so.1 -o libfz_api.so.1.0" \
-	LDFLAGS_PLAIN="-lyuv -lpthread" \
+	COMPILERFLAGS="%{rpmcflags} -Wall" \
+	LDFLAGS="%{rpmldflags}" \
 	TARGET_ARCH= \
 	TARGET_OS=Linux
 

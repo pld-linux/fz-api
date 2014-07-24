@@ -1,0 +1,66 @@
+--- fz-linux-api_x64/fz_api_src/Makefile.orig	2013-09-25 11:56:53.000000000 +0200
++++ fz-linux-api_x64/fz_api_src/Makefile	2014-07-24 21:20:32.086256112 +0200
+@@ -16,7 +16,7 @@
+ COMPILERFLAGS = -Wall -g
+ 
+ 
+-LDFLAGS_PLAIN = -lpthread
++LDFLAGS_PLAIN = -lyuv -lpthread
+ EXE_PATH = ./
+ 
+ ifeq ($(TARGET_OS),Darwin)
+@@ -24,13 +24,8 @@
+ LDFLAGS_D_OUT = -dynamiclib -o libfz_api.dylib
+ else
+ 
+-ifeq ($(TARGET_ARCH),x86_64)
+-CFLAGS = -m64 -fPIC $(COMPILERFLAGS) -I./
+-LDFLAGS_D_OUT = -m64 -shared -Wl,-soname,libfz_api.so.1 -o libfz_api.so.1.0
+-else
+-CFLAGS = $(COMPILERFLAGS) -I./
+-LDFLAGS_D_OUT = -shared -Wl,-soname,libfz_api.so.1 -o libfz_api.so.1.0
+-endif
++CFLAGS = -fPIC $(COMPILERFLAGS) -I./
++LDFLAGS_D_OUT = $(LDFLAGS) -shared -Wl,-soname,libfz_api.so.1 -o libfz_api.so.1.0
+ 
+ endif
+ 
+@@ -38,17 +33,7 @@
+ #objects
+ 
+ API_OBJECTS  = ./timer.o ./socket_2.o ./logger.o ./common.o \
+-	./fzapi_channel.o ./fzapi.o ./fz_ll.o ./stream.o ./libyuv/cpu_id.o \
+-	./libyuv/compare.o ./libyuv/compare_common.o ./libyuv/compare_neon.o \
+-	./libyuv/compare_posix.o ./libyuv/compare_win.o ./libyuv/convert.o \
+-	./libyuv/convert_argb.o ./libyuv/convert_from.o ./libyuv/convert_from_argb.o \
+-	./libyuv/format_conversion.o ./libyuv/mjpeg_decoder.o ./libyuv/planar_functions.o \
+-	./libyuv/rotate.o ./libyuv/rotate_argb.o ./libyuv/rotate_mips.o \
+-	./libyuv/rotate_neon.o ./libyuv/row_posix.o ./libyuv/row_win.o \
+-	./libyuv/scale.o ./libyuv/scale_argb.o \
+-	./libyuv/scale_argb_neon.o ./libyuv/scale_mips.o ./libyuv/scale_neon.o \
+-	./libyuv/video_common.o ./libyuv/row_any.o ./libyuv/row_common.o \
+-	./libyuv/row_mips.o ./libyuv/row_neon.o 
++	./fzapi_channel.o ./fzapi.o ./fz_ll.o ./stream.o
+ 
+ 
+ #########
+@@ -65,7 +50,7 @@
+ 	@rm -f $*.d.tmp
+ 
+ %.o: %.cc
+-	g++ $(CFLAGS) -c $*.cc -o $*.o
++	$(CPP) $(CFLAGS) -c $*.cc -o $*.o
+ 
+ %.o: %.c
+ 	$(CC) $(CFLAGS) -c $*.c -o $*.o
+--- fz-linux-api_x64/fz_api_src/fzapi.cpp.orig	2014-07-24 21:21:37.052920053 +0200
++++ fz-linux-api_x64/fz_api_src/fzapi.cpp	2014-07-24 21:21:40.052919927 +0200
+@@ -611,7 +611,7 @@
+ 	return iResult;
+ }
+ 
+-#include <libyuv/libyuv.h>
++#include <libyuv.h>
+ 
+ FZ_API FZ_Result FZ_GetFrameARGB(
+ 	FZ_Device_Handle_t hDev,
