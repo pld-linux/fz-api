@@ -4,7 +4,7 @@ Name:		fz-api
 # see fz_api_src/fzapi.cpp /FZAPI_VERSION
 Version:	4.1.2
 %define	verdate	20130925
-Release:	0.%{verdate}.1
+Release:	0.%{verdate}.2
 License:	LGPL v3+
 Group:		Libraries
 Source0:	http://www.fotonic.com/assets/documents/files/131002/fz-linux-api_x64_%{verdate}.tar.gz
@@ -16,7 +16,7 @@ Source0:	http://www.fotonic.com/assets/documents/files/131002/fz-linux-api_x64_%
 Patch0:		%{name}-system-libyuv.patch
 URL:		http://www.fotonic.com/content/Products/downloads.aspx
 BuildRequires:	libstdc++-devel
-BuildRequires:	libyuv-devel
+#BuildRequires:	libyuv-devel
 BuildRequires:	sed >= 4.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -63,7 +63,8 @@ Dokumentacja do FZ-API.
 
 %prep
 %setup -q -c
-%patch0 -p0
+# system libyuv removed Bayer support making it useless here
+#%patch0 -p0
 
 %build
 %{__make} -C fz-linux-api_x64/fz_api_src \
