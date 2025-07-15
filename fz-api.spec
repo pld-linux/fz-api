@@ -64,7 +64,7 @@ Dokumentacja do FZ-API.
 %prep
 %setup -q -c
 # system libyuv removed Bayer support making it useless here
-#%patch0 -p0
+#%%patch0 -p0
 
 %build
 %{__make} -C fz-linux-api_x64/fz_api_src \
